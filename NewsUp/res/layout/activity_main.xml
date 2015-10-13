@@ -9,12 +9,10 @@
     tools:context="com.example.newsup.MainActivity" >
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="NewsUp"
-        android:fontFamily="cabin"
-        android:textSize="32sp" />
+    android:id="@+id/my_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="NewsUp"
+    android:elevation="5dp" />
 
 </RelativeLayout>
