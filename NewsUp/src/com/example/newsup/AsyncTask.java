@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import org.xmlpull.v1.XmlPullParser;
@@ -137,5 +138,7 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 		super.onPostExecute(allNews);
 		allNews.remove(0);
 		pd.dismiss();
+		Collections.shuffle(allNews);
+		adapter.notifyDataSetChanged();
 	}
 }
