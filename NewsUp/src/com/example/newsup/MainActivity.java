@@ -1,17 +1,38 @@
 package com.example.newsup;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class MainActivity extends Activity {
 
+	ArrayList<MyNews> allNews;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		}
+		allNews = new ArrayList<MyNews>();
+		ListView list = (ListView)findViewById(R.id.listView1);
+		MyAdapter adapter = new MyAdapter(this, android.R.layout.simple_list_item_1, allNews);
+		list.setAdapter(adapter);
+		GetNews gn = new GetNews(list, this, allNews, adapter);
+		gn.execute("http://rss.cnn.com/rss/edition.rss", "CNN");
+		
+		GetNews gn1 = new GetNews(list, this, allNews, adapter);
+		gn1.execute("http://feeds.abcnews.com/abcnews/topstories", "ABC");
+		
+		List<MyNews> listnews= new List<MyNews>();
+		listnews = allNews.toArray();
+		
+		adapter.notifyDataSetChanged();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
