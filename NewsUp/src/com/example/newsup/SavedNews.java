@@ -1,9 +1,13 @@
 package com.example.newsup;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 
 public class SavedNews extends Activity {
 
@@ -11,6 +15,16 @@ public class SavedNews extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_saved_news);
+		ListView lv = (ListView)findViewById(R.id.listView1);
+		DatabaseHandler news=new DatabaseHandler(this);
+		List<MyNews> n = news.getAllNews();
+		ArrayList<MyNews> allNews = new ArrayList<MyNews>();
+		allNews.addAll(n);
+		//allNews.add(news.getNews(1));
+		MyAdapter adapter = new MyAdapter(this, android.R.layout.simple_list_item_1, allNews);
+		lv.setAdapter(adapter);
+		
+		
 	}
 
 	@Override

@@ -44,9 +44,9 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		String CREATE_CONTACTS_TABLE = "CREATE TABLE " + TABLE_SAVED_NEWS + "("
 				+ KEY_ID + " INTEGER PRIMARY KEY," + KEY_TITLE + " TEXT,"
-				+ KEY_DESCRIPTION + " TEXT" + KEY_SOURCE + " TEXT"
-				+ KEY_IMAGE_LINK + " TEXT" + KEY_TYPE + " TEXT" + KEY_DATE
-				+ " TEXT" + KEY_LINKNEWS + " TEXT" + ")";
+				+ KEY_DESCRIPTION + " TEXT," + KEY_SOURCE + " TEXT,"
+				+ KEY_IMAGE_LINK + " TEXT," + KEY_TYPE + " TEXT," + KEY_DATE
+				+ " TEXT," + KEY_LINKNEWS + " TEXT" + ")";
 
 		db.execSQL(CREATE_CONTACTS_TABLE);
 		Toast.makeText(c, "Table for Saving News created.", Toast.LENGTH_LONG)
@@ -81,6 +81,8 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		values.put(KEY_TYPE, mynews.getTypeOfNews());
 
 		try {
+			Toast.makeText(c, "In  addNews" + mynews.getTitle(),
+					Toast.LENGTH_SHORT).show();
 			// Inserting Row
 			db.insert(TABLE_SAVED_NEWS, null, values);
 		} catch (Exception e) {
@@ -93,25 +95,27 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 	MyNews getNews(int id) {
 		SQLiteDatabase db = this.getReadableDatabase();
 
-		Cursor cursor = db.query(TABLE_SAVED_NEWS, new String[] { KEY_TITLE, KEY_DESCRIPTION, KEY_SOURCE, 
-								KEY_TYPE, KEY_DATE, KEY_LINKNEWS }, 
-				KEY_ID + "=?",
-				new String[] { String.valueOf(id)}, 
-				null, null, null, null);
-		if (cursor != null)
+		Cursor cursor = db.query(TABLE_SAVED_NEWS, new String[] { KEY_TITLE,
+				KEY_DESCRIPTION, KEY_SOURCE, KEY_IMAGE_LINK, KEY_TYPE,
+				KEY_DATE, KEY_LINKNEWS }, KEY_ID + "=?",
+				new String[] { String.valueOf(id) }, null, null, null, null);
+		if (cursor != null) {
 			cursor.moveToFirst();
-
-		MyNews news = new MyNews(cursor.getString(1),
-				cursor.getString(2), cursor.getString(3), "", 
-				cursor.getString(4),cursor.getString(5),
-				cursor.getString(6),cursor.getString(7));
+			Toast.makeText(c, "Cursor of getNews(id) is not NULL",
+					Toast.LENGTH_SHORT).show();
+		} else
+			Toast.makeText(c, "Cursor of getNews(id) is NULL",
+					Toast.LENGTH_SHORT).show();
+		MyNews news = new MyNews(cursor.getString(0), cursor.getString(1),
+				cursor.getString(2), "", cursor.getString(3),
+				cursor.getString(4), cursor.getString(5), cursor.getString(6));
 		// return contact
 		return news;
 	}
 
 	// Getting All Contacts
 	public List<MyNews> getAllNews() {
-		List<MyNews> contactList = new ArrayList<MyNews>();
+		List<MyNews> newsList = new ArrayList<MyNews>();
 		// Select All Query
 		String selectQuery = "SELECT  * FROM " + TABLE_SAVED_NEWS;
 
@@ -122,32 +126,33 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor.moveToFirst()) {
 			do {
 				MyNews news = new MyNews(cursor.getString(1),
-						cursor.getString(2), cursor.getString(3), "", 
-						cursor.getString(4),cursor.getString(5),
-						cursor.getString(6),cursor.getString(7));
+						cursor.getString(2), "", cursor.getString(3),
+						cursor.getString(4), cursor.getString(5),
+						cursor.getString(6), cursor.getString(7));
 				// Adding contact to list
-				contactList.add(news);
+
+				newsList.add(news);
 			} while (cursor.moveToNext());
 		}
 		db.close();
 
 		// return contact list
-		return contactList;
+		return newsList;
 	}
 
 	// Updating single contact
-	/*public int updateContact(MyNews ) {
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		ContentValues values = new ContentValues();
-		values.put(KEY_NAME, contact.getName());
-		values.put(KEY_PH_NO, contact.getPhoneNumber());
-
-		// updating row
-		return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
-				new String[] { String.valueOf(contact.getID()) });
-
-	}*/
+	/*
+	 * public int updateContact(MyNews ) { SQLiteDatabase db =
+	 * this.getWritableDatabase();
+	 * 
+	 * ContentValues values = new ContentValues(); values.put(KEY_NAME,
+	 * contact.getName()); values.put(KEY_PH_NO, contact.getPhoneNumber());
+	 * 
+	 * // updating row return db.update(TABLE_CONTACTS, values, KEY_ID + " = ?",
+	 * new String[] { String.valueOf(contact.getID()) });
+	 * 
+	 * }
+	 */
 
 	// Deleting single contact
 	public void deleteNews(MyNews news) {

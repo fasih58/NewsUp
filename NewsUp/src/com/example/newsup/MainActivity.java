@@ -6,9 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -48,5 +50,11 @@ public class MainActivity extends Activity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	public  void onViewSavedBtnClicked(View v)
+	{
+		Intent intent = new Intent(this, SavedNews.class);
+		startActivity(intent);
 	}
 }
