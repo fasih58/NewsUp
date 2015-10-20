@@ -18,7 +18,8 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:paddingLeft="5dp"
-            android:src="@drawable/ic_share" />
+            android:src="@drawable/ic_share"
+            android:onClick="shareBtnClick" />
 
         <ImageButton
             android:id="@+id/starButton"
@@ -29,7 +30,8 @@
             android:layout_alignLeft="@+id/shareButton"
             android:layout_below="@+id/shareButton"
             android:paddingLeft="5dp"
-            android:src="@drawable/ic_share" />
+            android:src="@drawable/ic_share"
+            android:onClick="starBtnClick" />
     </RelativeLayout>
 
     <ImageView

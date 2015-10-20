@@ -27,27 +27,31 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 	ProgressDialog pd;
 	ArrayList<MyNews> allNews;
 	MyAdapter adapter;
+	static int count;
 
 	GetNews(ListView l, Context c, ArrayList<MyNews> data, MyAdapter adap) {
 		lv = l;
 		context = c;
 		allNews = data;
 		adapter = adap;
+		count = 0;
 	}
 
 	@Override
 	protected void onPreExecute() {
 		super.onPreExecute();
 		pd = ProgressDialog.show(context, "", "Fetching News...", false);
+		count++;
+		Log.e("task No." + count, "e");
 	}
 
 	@Override
 	protected ArrayList<MyNews> doInBackground(String... params) {
-		ArrayList<String> heading = new ArrayList<String>();
+		ArrayList<String> title = new ArrayList<String>();
 		ArrayList<String> description = new ArrayList<String>();
 		ArrayList<String> date = new ArrayList<String>();
 		ArrayList<String> imageLink = new ArrayList<String>();
-		ArrayList<String> link = new ArrayList<String>();
+		ArrayList<String> newsLink = new ArrayList<String>();
 		try {
 			URL url = new URL(params[0]);
 
@@ -69,7 +73,7 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 						insideItem = true;
 					} else if (xpp.getName().equalsIgnoreCase("title")) {
 						if (insideItem) {
-							heading.add(xpp.nextText());
+							title.add(xpp.nextText());
 						}
 
 					} else if (xpp.getName().equalsIgnoreCase("description")) {
@@ -81,11 +85,16 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 							date.add(xpp.nextText());
 						}
 					} else if (xpp.getName().equalsIgnoreCase("url")) {
-						if (insideItem)
-							imageLink.add(xpp.nextText());
+						//
 					} else if (xpp.getName().equalsIgnoreCase("guid")) {
-						if (insideItem)
-							link.add(xpp.nextText());
+						if (insideItem) {
+							newsLink.add(xpp.nextText());
+						}
+					} else if (xpp.getName()
+							.equalsIgnoreCase("media:thumbnail")) {
+						if (insideItem) {
+							imageLink.add(xpp.getAttributeValue(0));
+						}
 					}
 				} else if (eventType == XmlPullParser.END_TAG
 						&& xpp.getName().equalsIgnoreCase("item")) {
@@ -103,16 +112,17 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 			e.printStackTrace();
 		}
 		Log.d("Inside", "Before FOR");
-		
-		
-		for (int i = 0; i < heading.size(); i++) {
+
+		for (int i = 0; i < title.size(); i++) {
 			String source;
 			if (params[1] == "CNN")
 				source = "CNN";
 			else
 				source = "ABC";
-			MyNews obj = new MyNews(heading.get(i), description.get(i), source,
-					link.get(i), link.get(i), "FirstType", date.get(i));
+			MyNews obj = new MyNews(title.get(i), description.get(i), source,
+					"", imageLink.get(i), "All News", date.get(i),
+					newsLink.get(i));
+
 			allNews.add(obj);
 		}
 

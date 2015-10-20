@@ -5,32 +5,35 @@ import java.sql.Date;
 import android.media.Image;
 
 public class MyNews {
-	String headline;
+	String title;
 	String details;
 	String source;
 	String sourceImg;
 	String newsImage;
-	String type;
+	String typeOfNews;
 	String date;
-	
-	public MyNews(String headline, String details, String source,
-			String sourceImg, String newsImage, String type, String date) {
+	String linkToNews;
+
+	public MyNews(String title, String details, String source,
+			String sourceImg, String newsImage, String typeOfNews, String date,
+			String linkToNews) {
 		super();
-		this.headline = headline;
+		this.title = title;
 		this.details = details;
 		this.source = source;
 		this.sourceImg = sourceImg;
 		this.newsImage = newsImage;
-		this.type = type;
+		this.typeOfNews = typeOfNews;
 		this.date = date;
+		this.linkToNews = linkToNews;
 	}
 
-	public String getHeadline() {
-		return headline;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setHeadline(String headline) {
-		this.headline = headline;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public String getDetails() {
@@ -65,12 +68,12 @@ public class MyNews {
 		this.newsImage = newsImage;
 	}
 
-	public String getType() {
-		return type;
+	public String getTypeOfNews() {
+		return typeOfNews;
 	}
 
-	public void setType(String type) {
-		this.type = type;
+	public void setTypeOfNews(String typeOfNews) {
+		this.typeOfNews = typeOfNews;
 	}
 
 	public String getDate() {
@@ -79,5 +82,13 @@ public class MyNews {
 
 	public void setDate(String date) {
 		this.date = date;
+	}
+
+	public String getLinkToNews() {
+		return linkToNews;
+	}
+
+	public void setLinkToNews(String linkToNews) {
+		this.linkToNews = linkToNews;
 	}
 }
