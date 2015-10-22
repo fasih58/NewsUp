@@ -31,12 +31,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MyAdapter extends ArrayAdapter<MyNews> {
+public class SavedNewsAdapter extends ArrayAdapter<MyNews> {
 	Context c;
 	int layoutFile;
 	ArrayList<MyNews> data;
 
-	public MyAdapter(Context context, int resource, ArrayList<MyNews> objects) {
+	public SavedNewsAdapter(Context context, int resource,
+			ArrayList<MyNews> objects) {
 
 		super(context, resource, objects);
 		c = context;
@@ -66,12 +67,8 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 		final RelativeLayout rl = (RelativeLayout) row
 				.findViewById(R.id.LinearLayout1);
 		final int pos = position;
-		ImageView shareButton = (ImageView) row
-				.findViewById(R.id.shareButton);
-
 		titleText.setText(data.get(position).getTitle());
-
-		sourceName.setVisibility(sourceName.GONE);
+		sourceName.setVisibility(View.GONE);
 
 		date.setTextColor(Color.GRAY);
 		date.setText(data.get(position).getDate());
@@ -98,8 +95,6 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 					InputStream input = b_entity.getContent();
 					Bitmap bitmap = BitmapFactory.decodeStream(input);
 					newsImage.setImageBitmap(bitmap);
-					if(bitmap == null)
-						newsImage.setVisibility(View.GONE);
 				} catch (Exception ex) {
 
 				}
@@ -107,14 +102,15 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 		});
 		thread.start();
 		
-		if (source == "CNN")
+		
+		if (source.contains("CNN")) {
+			data.get(position).setSource("CNN");
 			sourceImage.setImageResource(R.drawable.cnn);
-		else if (source == "ABC")
+		} else if (source.contains("ABC")) {
+			data.get(position).setSource("ABC");
 			sourceImage.setImageResource(R.drawable.abc);
-		else if(source == "" || source == null)
-		{
-			sourceImage.setVisibility(View.GONE);
 		}
+
 		rl.setVisibility(View.GONE);
 
 		android.view.View.OnClickListener listener = new View.OnClickListener() {
@@ -122,65 +118,13 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Toast.makeText(c, "News Clicked on position " + pos,
-						Toast.LENGTH_SHORT).show();
-				// ll.setVisibility(0);
-
 				Intent intent = new Intent(c, NewsView.class);
 				intent.putExtra("url", url);
 				c.startActivity(intent);
 			}
 		};
 
-		OnLongClickListener longlistener = new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View v) {
-				// TODO Auto-generated method stub
-				rl.setVisibility(View.VISIBLE);
-				return true;
-			}
-		};
-		titleText.setOnClickListener(listener);
-		date.setOnClickListener(listener);
-		description.setOnClickListener(listener);
-		sourceImage.setOnClickListener(listener);
-		newsImage.setOnClickListener(listener);
-		titleText.setOnLongClickListener(longlistener);
-		date.setOnLongClickListener(longlistener);
-		description.setOnLongClickListener(longlistener);
-		newsImage.setOnLongClickListener(longlistener);
-
-		shareButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Toast.makeText(c, "Share Button Clicked " + pos,
-						Toast.LENGTH_SHORT).show();
-				// ll.setVisibility(0);
-			}
-		});
-
-		ImageView starButton = (ImageView) row
-				.findViewById(R.id.starButton);
-		starButton.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				DatabaseHandler news = new DatabaseHandler(c);
-				news.addNews(new MyNews(data.get(pos).getTitle(), data.get(pos)
-						.getDetails(), data.get(pos).getSource(), "", data.get(
-						pos).getNewsImage(), data.get(pos).getTypeOfNews(),
-						data.get(pos).getDate(), data.get(pos).getLinkToNews()));
-
-				Toast.makeText(c,
-						"News at position " + pos + " saved locally.",
-						Toast.LENGTH_SHORT).show();
-				// ll.setVisibility(0);
-			}
-		});
+		row.setOnClickListener(listener);
 		return row;
 	}
 }

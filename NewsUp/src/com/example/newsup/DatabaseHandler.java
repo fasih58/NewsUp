@@ -110,6 +110,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 				cursor.getString(2), "", cursor.getString(3),
 				cursor.getString(4), cursor.getString(5), cursor.getString(6));
 		// return contact
+		
 		return news;
 	}
 
@@ -126,14 +127,14 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 		if (cursor.moveToFirst()) {
 			do {
 				MyNews news = new MyNews(cursor.getString(1),
-						cursor.getString(2), "", cursor.getString(3),
+						cursor.getString(2), cursor.getString(3), "",
 						cursor.getString(4), cursor.getString(5),
 						cursor.getString(6), cursor.getString(7));
 				// Adding contact to list
-
 				newsList.add(news);
 			} while (cursor.moveToNext());
 		}
+		
 		db.close();
 
 		// return contact list

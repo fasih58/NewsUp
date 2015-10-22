@@ -78,7 +78,9 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 
 					} else if (xpp.getName().equalsIgnoreCase("description")) {
 						if (insideItem) {
-							description.add(xpp.nextText());
+							String desc = xpp.nextText();
+							String noHTMLString = desc.replaceAll("\\<.*?>","");
+							description.add(noHTMLString);
 						}
 					} else if (xpp.getName().equalsIgnoreCase("pubDate")) {
 						if (insideItem) {
@@ -142,7 +144,7 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 		super.onProgressUpdate(values);
 
 	}
-
+	
 	@Override
 	protected void onPostExecute(ArrayList<MyNews> allNews) {
 		super.onPostExecute(allNews);

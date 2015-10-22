@@ -20,11 +20,8 @@ public class SavedNews extends Activity {
 		List<MyNews> n = news.getAllNews();
 		ArrayList<MyNews> allNews = new ArrayList<MyNews>();
 		allNews.addAll(n);
-		//allNews.add(news.getNews(1));
-		MyAdapter adapter = new MyAdapter(this, android.R.layout.simple_list_item_1, allNews);
-		lv.setAdapter(adapter);
-		
-		
+		SavedNewsAdapter adapter = new SavedNewsAdapter(this, android.R.layout.simple_list_item_1, allNews);
+		lv.setAdapter(adapter);	
 	}
 
 	@Override
