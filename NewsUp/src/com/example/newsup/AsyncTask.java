@@ -8,26 +8,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
+class GetNews extends AsyncTask<String, Void, String> {
 	ListView lv;
 	Context context;
 	ProgressDialog pd;
 	ArrayList<MyNews> allNews;
 	MyAdapter adapter;
 	static int count;
+	private ArrayList<String> title;
+	private ArrayList<String> description;
+	private ArrayList<String> date;
+	private ArrayList<String> imageLink;
+	private ArrayList<String> newsLink;
 
 	GetNews(ListView l, Context c, ArrayList<MyNews> data, MyAdapter adap) {
 		lv = l;
@@ -35,6 +50,11 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 		allNews = data;
 		adapter = adap;
 		count = 0;
+		title = new ArrayList<String>();
+		description = new ArrayList<String>();
+		date = new ArrayList<String>();
+		imageLink = new ArrayList<String>();
+		newsLink = new ArrayList<String>();
 	}
 
 	@Override
@@ -46,12 +66,7 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 	}
 
 	@Override
-	protected ArrayList<MyNews> doInBackground(String... params) {
-		ArrayList<String> title = new ArrayList<String>();
-		ArrayList<String> description = new ArrayList<String>();
-		ArrayList<String> date = new ArrayList<String>();
-		ArrayList<String> imageLink = new ArrayList<String>();
-		ArrayList<String> newsLink = new ArrayList<String>();
+	protected String doInBackground(String... params) {
 		try {
 			URL url = new URL(params[0]);
 
@@ -79,7 +94,8 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 					} else if (xpp.getName().equalsIgnoreCase("description")) {
 						if (insideItem) {
 							String desc = xpp.nextText();
-							String noHTMLString = desc.replaceAll("\\<.*?>","");
+							String noHTMLString = desc
+									.replaceAll("\\<.*?>", "");
 							description.add(noHTMLString);
 						}
 					} else if (xpp.getName().equalsIgnoreCase("pubDate")) {
@@ -95,7 +111,11 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 					} else if (xpp.getName()
 							.equalsIgnoreCase("media:thumbnail")) {
 						if (insideItem) {
-							imageLink.add(xpp.getAttributeValue(0));
+							final String link = xpp.getAttributeValue(0);
+							// GetPicture gp = new GetPicture(link, adapter,
+							// this);
+							// gp.execute();
+							imageLink.add(link);
 						}
 					}
 				} else if (eventType == XmlPullParser.END_TAG
@@ -115,20 +135,11 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 		}
 		Log.d("Inside", "Before FOR");
 
-		for (int i = 0; i < title.size(); i++) {
-			String source;
-			if (params[1] == "CNN")
-				source = "CNN";
-			else
-				source = "ABC";
-			MyNews obj = new MyNews(title.get(i), description.get(i), source,
-					"", imageLink.get(i), "All News", date.get(i),
-					newsLink.get(i));
+		return params[1];
+	}
 
-			allNews.add(obj);
-		}
-
-		return allNews;
+	public void setImageLink(String link) {
+		imageLink.add(link);
 	}
 
 	public InputStream getInputStream(URL url) {
@@ -144,10 +155,23 @@ class GetNews extends AsyncTask<String, Void, ArrayList<MyNews>> {
 		super.onProgressUpdate(values);
 
 	}
-	
+
 	@Override
-	protected void onPostExecute(ArrayList<MyNews> allNews) {
-		super.onPostExecute(allNews);
+	protected void onPostExecute(String params) {
+		super.onPostExecute(params);
+		for (int i = 0; i < title.size(); i++) {
+			String source;
+			if (params == "CNN")
+				source = "CNN";
+			else
+				source = "ABC";
+			MyNews obj = new MyNews(title.get(i), description.get(i), source,
+					"", imageLink.get(i), "All News", date.get(i),
+					newsLink.get(i));
+
+			allNews.add(obj);
+		}
+
 		allNews.remove(0);
 		pd.dismiss();
 		Collections.shuffle(allNews);

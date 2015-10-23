@@ -18,6 +18,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,35 +76,8 @@ public class SavedNewsAdapter extends ArrayAdapter<MyNews> {
 		date.setText(data.get(position).getDate());
 
 		description.setText(data.get(position).getDetails());
+		newsImage.setImageResource(R.drawable.news_up_logo);
 
-		Thread thread = new Thread(new Runnable() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				try {
-
-					URL url11 = new URL(data.get(pos).getNewsImage());
-					Log.e("ImageLink: ", data.get(pos).getNewsImage());
-					HttpGet httpRequest = null;
-					httpRequest = new HttpGet(url11.toURI());
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpResponse response = (HttpResponse) httpclient
-
-					.execute(httpRequest);
-
-					HttpEntity entity = response.getEntity();
-					BufferedHttpEntity b_entity = new BufferedHttpEntity(entity);
-					InputStream input = b_entity.getContent();
-					Bitmap bitmap = BitmapFactory.decodeStream(input);
-					newsImage.setImageBitmap(bitmap);
-				} catch (Exception ex) {
-
-				}
-			}
-		});
-		thread.start();
-		
-		
 		if (source.contains("CNN")) {
 			data.get(position).setSource("CNN");
 			sourceImage.setImageResource(R.drawable.cnn);
@@ -118,9 +93,20 @@ public class SavedNewsAdapter extends ArrayAdapter<MyNews> {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(c, NewsView.class);
-				intent.putExtra("url", url);
-				c.startActivity(intent);
+				ConnectivityManager cm = (ConnectivityManager) c
+						.getSystemService(Context.CONNECTIVITY_SERVICE);
+
+				NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+				boolean isConnected = activeNetwork != null
+						&& activeNetwork.isConnectedOrConnecting();
+
+				if (isConnected) {
+					Intent intent = new Intent(c, NewsView.class);
+					intent.putExtra("url", url);
+					c.startActivity(intent);
+				}
+				else
+					Toast.makeText(c, "Sorry, You're not connected to the internet!", Toast.LENGTH_SHORT).show();
 			}
 		};
 

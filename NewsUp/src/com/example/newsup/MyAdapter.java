@@ -1,7 +1,9 @@
 package com.example.newsup;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 import org.apache.http.HttpEntity;
@@ -66,54 +68,35 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 		final RelativeLayout rl = (RelativeLayout) row
 				.findViewById(R.id.LinearLayout1);
 		final int pos = position;
-		ImageView shareButton = (ImageView) row
-				.findViewById(R.id.shareButton);
+		ImageView shareButton = (ImageView) row.findViewById(R.id.shareButton);
 
 		titleText.setText(data.get(position).getTitle());
 
-		sourceName.setVisibility(sourceName.GONE);
+		sourceName.setVisibility(View.GONE);
 
 		date.setTextColor(Color.GRAY);
 		date.setText(data.get(position).getDate());
 
 		description.setText(data.get(position).getDetails());
 
-		Thread thread = new Thread(new Runnable() {
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				try {
+		// InputStream input = (data.get(position).getNewsImage());
+		newsImage.setVisibility(View.INVISIBLE);
 
-					URL url11 = new URL(data.get(pos).getNewsImage());
-					Log.e("ImageLink: ", data.get(pos).getNewsImage());
-					HttpGet httpRequest = null;
-					httpRequest = new HttpGet(url11.toURI());
-					HttpClient httpclient = new DefaultHttpClient();
-					HttpResponse response = (HttpResponse) httpclient
+		/*
+		 * try { InputStream input = new ByteArrayInputStream(
+		 * (data.get(position).getNewsImage())
+		 * .getBytes(StandardCharsets.UTF_8)); Bitmap bitmap =
+		 * BitmapFactory.decodeStream(input); newsImage.setImageBitmap(bitmap);
+		 * if (bitmap == null) newsImage.setVisibility(View.GONE); } catch
+		 * (Exception e) { Log.e("Error Aaya", e.toString()); }
+		 */
 
-					.execute(httpRequest);
-
-					HttpEntity entity = response.getEntity();
-					BufferedHttpEntity b_entity = new BufferedHttpEntity(entity);
-					InputStream input = b_entity.getContent();
-					Bitmap bitmap = BitmapFactory.decodeStream(input);
-					newsImage.setImageBitmap(bitmap);
-					if(bitmap == null)
-						newsImage.setVisibility(View.GONE);
-				} catch (Exception ex) {
-
-				}
-			}
-		});
-		thread.start();
-		
 		if (source == "CNN")
 			sourceImage.setImageResource(R.drawable.cnn);
 		else if (source == "ABC")
 			sourceImage.setImageResource(R.drawable.abc);
-		else if(source == "" || source == null)
-		{
-			sourceImage.setVisibility(View.GONE);
+		else if (source == "" || source == null) {
+			sourceImage.setVisibility(View.INVISIBLE);
 		}
 		rl.setVisibility(View.GONE);
 
@@ -128,6 +111,11 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 
 				Intent intent = new Intent(c, NewsView.class);
 				intent.putExtra("url", url);
+				intent.putExtra("title", data.get(pos).getTitle());
+				intent.putExtra("desc", data.get(pos).getDetails());
+				intent.putExtra("date", data.get(pos).getDate());
+				intent.putExtra("source", data.get(pos).getSource());
+				intent.putExtra("link", data.get(pos).getLinkToNews());
 				c.startActivity(intent);
 			}
 		};
@@ -136,8 +124,12 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 
 			@Override
 			public boolean onLongClick(View v) {
+
 				// TODO Auto-generated method stub
-				rl.setVisibility(View.VISIBLE);
+				if (!rl.isShown())
+					rl.setVisibility(View.VISIBLE);
+				else
+					rl.setVisibility(View.GONE);
 				return true;
 			}
 		};
@@ -156,14 +148,26 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
+
+				Intent sendIntent = new Intent();
+				sendIntent.setAction(Intent.ACTION_SEND);
+				sendIntent.putExtra(Intent.EXTRA_TEXT,
+						"Title: " + data.get(pos).getTitle()
+								+ "\nDescription: "
+								+ data.get(pos).getDetails() + "\nSource: "
+								+ data.get(pos).getSource() + "\nDate: "
+								+ data.get(pos).getDate() + "\nLink: "
+								+ data.get(pos).getLinkToNews() + "\n\n");
+				sendIntent.setType("text/plain");
+				c.startActivity(sendIntent);
+
 				Toast.makeText(c, "Share Button Clicked " + pos,
 						Toast.LENGTH_SHORT).show();
 				// ll.setVisibility(0);
 			}
 		});
 
-		ImageView starButton = (ImageView) row
-				.findViewById(R.id.starButton);
+		ImageView starButton = (ImageView) row.findViewById(R.id.starButton);
 		starButton.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -181,6 +185,9 @@ public class MyAdapter extends ArrayAdapter<MyNews> {
 				// ll.setVisibility(0);
 			}
 		});
+		GetPicture gp = new GetPicture(data.get(position).getNewsImage(), this,
+				newsImage);
+		gp.execute();
 		return row;
 	}
 }
